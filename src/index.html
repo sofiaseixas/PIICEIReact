@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tutorial React</title>
+    <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.23.1/babel.min.js"></script>
+</head>
+<body>
+    
+    <div id="app"></div>
+    
+    <script type="text/babel">
+        
+        var Item = React.createClass({
+            getInitialState: function() {
+                return {editing: false};
+            },
+            edit: function() {
+                this.setState({editing: true});
+            },
+            remove: function() {
+                this.props.remove(this.props.index);
+            },
+            save: function() {
+                this.props.update(this.refs.newText.value, this.props.index);
+                this.setState({editing: false});  
+            },
+            renderNormal: function() {
+                return (
+                    <div>
+                        <hr/>
+                        <p>{this.props.text}</p>
+                        <button onClick={this.edit}>Editar</button>
+                        <button onClick={this.remove}>Remover</button>
+                        <hr/>
+                    </div>
+                );
+            },
+            renderForm: function() {
+                return (
+                    <div>
+                        <hr/>
+                        <textarea ref="newText" defaultValue={this.props.text}></textarea>
+                        <br/>
+                        <button onClick={this.save}>Guardar</button>
+                        <hr/>
+                    </div>
+                );
+            },
+            render: function() {
+                if(this.state.editing){
+                    return this.renderForm();
+                }
+                else {
+                    return this.renderNormal();                        
+                }
+            }
+        });
+
+        var ShoppingList = React.createClass({
+            getInitialState: function() {
+                return {
+                    items: ["Batatas", "Cebolas", "Cenouras"]
+                }
+            },
+            addItem: function(text) {                
+                var tmp = this.state.items;
+                tmp.push(text);
+                this.setState({items: tmp});             
+            },
+            removeItem: function(i) {
+                var tmp = this.state.items;
+                tmp.splice(i, 1);
+                this.setState({items: tmp});
+            },
+            updateItem: function(newText, i) {
+                var tmp = this.state.items;
+                tmp[i] = newText;
+                this.setState({items: tmp});
+            },
+            eachItem: function(item, i) {
+                return (<Item text={item} index={i} update={this.updateItem} remove={this.removeItem} />);
+            },
+            render: function() {
+                return (
+                    <div>
+                        <h2>Lista de Compras</h2>                        
+                        <button onClick={this.addItem.bind(null, 'Novo Item')}>Adicionar</button>
+                        <div>
+                            {this.state.items.map(this.eachItem)}                        
+                        </div>
+                    </div>
+                );
+            }
+        });
+        
+        ReactDOM.render(<ShoppingList />, document.getElementById('app'));
+
+    </script>
+    
+</body>
+</html>
